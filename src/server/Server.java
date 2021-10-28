@@ -1,12 +1,10 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class Server {
     List<ClientHandler> clients;
@@ -15,14 +13,14 @@ public class Server {
     Socket socket = null;
 
     public Server() {
-        clients = new Vector<>();
+        clients = new ArrayList<>();
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("The server has been started.");
 
             while (true) {
                 socket = serverSocket.accept();
                 System.out.println("The client has been connected.");
-                clients.add(new ClientHandler(this, socket));
+                subscribe(new ClientHandler(this, socket));
             }
 
         } catch (IOException e) {
@@ -34,5 +32,13 @@ public class Server {
         for (ClientHandler clientHandler : clients) {
             clientHandler.sendMessage(message);
         }
+    }
+
+    public void subscribe(ClientHandler clientHandler) {
+        clients.add(clientHandler);
+    }
+
+    public void unsubscribe(ClientHandler clientHandler) {
+        clients.remove(clientHandler);
     }
 }

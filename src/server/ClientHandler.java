@@ -19,30 +19,27 @@ public class ClientHandler {
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
+            new Thread(() -> {
+                try {
+                    while (true) {
 
-                            String message = inputStream.readUTF();
+                        String message = inputStream.readUTF();
 
-                            if (message.equals("/end")) {
-                                System.out.println("The client has been disconnected");
-                                break;
-                            }
-
-                            server.broadcastMessage(message);
+                        if (message.equals("/end")) {
+                            break;
                         }
+
+                        server.broadcastMessage(message);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    System.out.println("The client has been disconnected");
+                    server.unsubscribe(this);
+                    try {
+                        socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } finally {
-                        System.out.println("The client has been disconnected");
-                        try {
-                            socket.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                     }
                 }
             }).start();
