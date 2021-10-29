@@ -7,10 +7,18 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
 <VBox fx:controller="client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
-    <TextArea fx:id = "textArea" VBox.vgrow="ALWAYS" editable="false"/>
 
-    <HBox>
+    <HBox fx:id = "authPanel" visible="true" managed="true">
+        <TextField fx:id = "loginField" promptText="Login" HBox.hgrow="ALWAYS"/>
+        <PasswordField fx:id = "passwordField" promptText="Password" HBox.hgrow="ALWAYS" onAction="#tryToAuthenticate"/>
+        <Button text="Login" onAction="#tryToAuthenticate" minWidth="50"/>
+    </HBox>
+
+    <TextArea fx:id = "textArea" VBox.vgrow="ALWAYS" editable="false" wrapText="true"/>
+
+    <HBox fx:id = "messagePanel" visible="false" managed="false">
         <TextField fx:id = "textField" promptText="Enter your message" HBox.hgrow="ALWAYS" onAction="#sendMessage"/>
         <Button text="Send" onAction="#sendMessage"/>
     </HBox>

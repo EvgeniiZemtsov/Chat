@@ -34,6 +34,6 @@ public class SimpleAuthService implements AuthService {
 
     @Override
     public String getNicknameByLoginAndPassword(String login, String password) {
-        return users.get(login).nickname;
+        return users.get(login).password.equals(password) ? users.get(login).nickname : null;
     }
 }
