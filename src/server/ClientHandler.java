@@ -11,6 +11,7 @@ public class ClientHandler {
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
     private String nickname;
+    private String login;
 
     public ClientHandler(Server server, Socket socket) {
 
@@ -28,15 +29,22 @@ public class ClientHandler {
 
                         if (message.startsWith("/auth")) {
                             String[] token = message.split("\\s");
-
+                            if (token.length < 3) {
+                                continue;
+                            }
                             String newNickname = server.getAuthService().getNicknameByLoginAndPassword(token[1], token[2]);
+                            login = token[1];
 
                             if (newNickname != null) {
-                                nickname = newNickname;
-                                sendMessage("/authok " + nickname);
-                                server.subscribe(this);
-                                System.out.println("The client " + nickname + " has been connected.");
-                                break;
+                                if (!server.isLoggedIn(login)) {
+                                    nickname = newNickname;
+                                    sendMessage("/authok " + nickname);
+                                    server.subscribe(this);
+                                    System.out.println("The client " + nickname + " has been connected.");
+                                    break;
+                                } else {
+                                    sendMessage("The client with login " + login + " has already entered the chat.");
+                                }
                             } else {
                                 sendMessage("Invalid login or password.");
                             }
@@ -80,5 +88,9 @@ public class ClientHandler {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public String getLogin() {
+        return login;
     }
 }

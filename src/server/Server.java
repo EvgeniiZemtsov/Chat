@@ -51,4 +51,13 @@ public class Server {
     public AuthService getAuthService() {
         return authService;
     }
+
+    public boolean isLoggedIn(String login) {
+        for (ClientHandler client : clients) {
+            if (client.getLogin().equals(login)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
