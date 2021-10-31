@@ -2,6 +2,7 @@ package client;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
@@ -9,6 +10,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -39,6 +41,7 @@ public class Controller implements Initializable {
     private Socket socket;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
+    private Stage stage;
 
     private boolean isAuthenticated;
     private String nickname;
@@ -63,6 +66,18 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setAuthenticated(false);
+        Platform.runLater(() -> {
+            stage = (Stage) textField.getScene().getWindow();
+            stage.setOnCloseRequest(event -> {
+                if (socket != null && !socket.isClosed()) {
+                    try {
+                        outputStream.writeUTF("/end");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        });
 
     }
 
