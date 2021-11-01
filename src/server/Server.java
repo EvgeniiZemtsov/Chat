@@ -42,10 +42,12 @@ public class Server {
 
     public void subscribe(ClientHandler clientHandler) {
         clients.add(clientHandler);
+        broadcastClientsList();
     }
 
     public void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
+        broadcastClientsList();
     }
 
     public AuthService getAuthService() {
@@ -59,5 +61,16 @@ public class Server {
             }
         }
         return false;
+    }
+
+    private void broadcastClientsList() {
+        StringBuilder sb = new StringBuilder("/clientsList ");
+        for (ClientHandler client : clients) {
+            sb.append(client.getNickname()).append(" ");
+        }
+        String message = sb.toString();
+        for (ClientHandler client : clients) {
+            client.sendMessage(message);
+        }
     }
 }

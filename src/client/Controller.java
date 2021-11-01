@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -17,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -34,6 +36,8 @@ public class Controller implements Initializable {
     public PasswordField passwordField;
     @FXML
     public HBox messagePanel;
+    @FXML
+    public ListView<String> clientList;
 
     private final String IP_ADDRESS = "localhost";
     private final int PORT = 8189;
@@ -55,6 +59,9 @@ public class Controller implements Initializable {
 
         messagePanel.setVisible(isAuthenticated);
         messagePanel.setManaged(isAuthenticated);
+
+        clientList.setVisible(isAuthenticated);
+        clientList.setManaged(isAuthenticated);
 
         if (!isAuthenticated) {
             nickname = "";
@@ -125,11 +132,22 @@ public class Controller implements Initializable {
                     while (true) {
                         String message = inputStream.readUTF();
 
-                        if (message.equals("/end")) {
-                            break;
+                        if (message.startsWith("/")) {
+                            if (message.equals("/end")) {
+                                break;
+                            }
+                            if (message.startsWith("/clientsList ")) {
+                                String[] token = message.split("\\s+");
+                                Platform.runLater(() -> {
+                                    clientList.getItems().clear();
+                                    for (int i = 1; i < token.length; i++) {
+                                        clientList.getItems().add(token[i]);
+                                    }
+                                });
+                            }
+                        } else {
+                            textArea.appendText(message + "\n");
                         }
-
-                        textArea.appendText(message + "\n");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
