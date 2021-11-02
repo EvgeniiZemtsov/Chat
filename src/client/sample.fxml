@@ -10,7 +10,7 @@
 
     <HBox VBox.vgrow="ALWAYS">
         <TextArea fx:id = "textArea" VBox.vgrow="ALWAYS" editable="false" wrapText="true"/>
-        <ListView fx:id = "clientList" visible="false" managed="false" maxWidth="70"/>
+        <ListView fx:id = "clientList" visible="false" managed="false" maxWidth="70" onMouseClicked="#clickClientsList"/>
     </HBox>
 
     <HBox fx:id = "messagePanel" visible="false" managed="false">

@@ -55,12 +55,24 @@ public class ClientHandler {
                     while (true) {
                         String message = inputStream.readUTF();
 
-                        if (message.equals("/end")) {
-                            break;
+                        if (message.startsWith("/")) {
+                            System.out.println(message);
+                            if (message.equals("/end")) {
+                                outputStream.writeUTF("/end");
+                                break;
+                            }
+                            if (message.startsWith("/w")) {
+                                String[] token = message.split("\\s+", 3);
+                                if (token.length < 3) {
+                                    continue;
+                                }
+                                server.sendPrivateMessage(this, token[1], token[2]);
+                            }
+                        } else {
+                            server.broadcastMessage(this, message);
                         }
-
-                        server.broadcastMessage(this, message);
                     }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {

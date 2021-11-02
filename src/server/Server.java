@@ -3,10 +3,13 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server {
+    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
     private List<ClientHandler> clients;
     private AuthService authService;
 
@@ -38,6 +41,22 @@ public class Server {
         for (ClientHandler clientHandler : clients) {
             clientHandler.sendMessage(messageToSend);
         }
+    }
+
+    public void sendPrivateMessage(ClientHandler sender, String receiver, String message) {
+        String messageToSend = String.format("%s [%s] private [%s] : %s", formatter.format(new Date()), sender.getNickname(), receiver, message);
+
+        for (ClientHandler clientHandler : clients) {
+            if (clientHandler.getNickname().equals(receiver)) {
+                clientHandler.sendMessage(messageToSend);
+                if (!clientHandler.equals(sender)) {
+                    sender.sendMessage(messageToSend);
+                }
+                return;
+            }
+        }
+
+        sender.sendMessage(receiver + " not found.");
     }
 
     public void subscribe(ClientHandler clientHandler) {
