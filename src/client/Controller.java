@@ -2,15 +2,18 @@ package client;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.DataInputStream;
@@ -45,6 +48,8 @@ public class Controller implements Initializable {
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
     private Stage stage;
+    private Stage regStage;
+    private RegController regController;
 
     private boolean isAuthenticated;
     private String nickname;
@@ -72,6 +77,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setAuthenticated(false);
+        createRegWindow();
         Platform.runLater(() -> {
             stage = (Stage) textField.getScene().getWindow();
             stage.setOnCloseRequest(event -> {
@@ -125,6 +131,14 @@ public class Controller implements Initializable {
                             setAuthenticated(true);
                             break;
                         }
+
+                        if (message.startsWith("/regok")) {
+                            regController.addMessageToTextField("The user has been successfully registered.");
+                        }
+
+                        if (message.startsWith("/regno")) {
+                            regController.addMessageToTextField("The registration failed \nProbably user with the same login or nickname already exists.");
+                        }
                         textArea.appendText(message + "\n");
                     }
                     //work cycle
@@ -176,5 +190,41 @@ public class Controller implements Initializable {
     public void clickClientsList(MouseEvent mouseEvent) {
         String receiver = clientList.getSelectionModel().getSelectedItem();
         textField.setText("/w " + " " + receiver + " ");
+    }
+
+    private void createRegWindow() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("registration.fxml"));
+            Parent root = fxmlLoader.load();
+            regStage = new Stage();
+            regStage.setTitle("Registration");
+            regStage.setScene(new Scene(root, 400, 250));
+
+            regController = fxmlLoader.getController();
+            regController.setController(this);
+
+            regStage.initModality(Modality.APPLICATION_MODAL);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void registration(ActionEvent actionEvent) {
+        regStage.show();
+    }
+
+    public void tryToSignIn(String login, String password, String nickname) {
+        String message = String.format("/reg %s %s %s", login, password, nickname);
+
+        if (socket == null || socket.isClosed()) {
+            connect();
+        }
+
+        try {
+            outputStream.writeUTF(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -36,4 +36,15 @@ public class SimpleAuthService implements AuthService {
     public String getNicknameByLoginAndPassword(String login, String password) {
         return users.get(login).password.equals(password) ? users.get(login).nickname : null;
     }
+
+    @Override
+    public boolean registration(String login, String password, String nickname) {
+        for (Map.Entry<String, UserData> user : users.entrySet()) {
+            if (user.getValue().login.equals(login) || user.getValue().nickname.equals(nickname)) {
+                return false;
+            }
+        }
+        users.put(login, new UserData(login, password, nickname));
+        return true;
+    }
 }

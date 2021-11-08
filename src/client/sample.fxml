@@ -6,6 +6,7 @@
         <TextField fx:id = "loginField" promptText="Login" HBox.hgrow="ALWAYS"/>
         <PasswordField fx:id = "passwordField" promptText="Password" HBox.hgrow="ALWAYS" onAction="#tryToAuthenticate"/>
         <Button text="Login" onAction="#tryToAuthenticate" minWidth="50"/>
+        <Button text="Sign in" onAction="#registration" minWidth="50"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">

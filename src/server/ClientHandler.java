@@ -49,6 +49,23 @@ public class ClientHandler {
                                 sendMessage("Invalid login or password.");
                             }
                         }
+
+                        if (message.startsWith("/reg")) {
+                            String[] token = message.split("\\s");
+                            if (token.length < 4) {
+                                continue;
+                            }
+
+                            boolean isRegistered = server.getAuthService().registration(token[1], token[2], token[3]);
+
+                            if (isRegistered) {
+                                sendMessage("/regok");
+                            } else {
+                                sendMessage("/regno");
+                            }
+                        }
+
+
                     }
 
                     // work cycle
