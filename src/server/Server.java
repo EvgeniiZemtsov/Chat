@@ -1,5 +1,7 @@
 package server;
 
+import sun.java2d.pipe.SpanShapeRenderer;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -36,7 +38,7 @@ public class Server {
     }
 
     public void broadcastMessage(ClientHandler sender, String message) {
-        String messageToSend = String.format("%s : %s", sender.getNickname(), message);
+        String messageToSend = String.format("%s %s : %s", formatter.format(new Date()), sender.getNickname(), message);
 
         for (ClientHandler clientHandler : clients) {
             clientHandler.sendMessage(messageToSend);
